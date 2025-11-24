@@ -1,0 +1,245 @@
+import React, { useState } from 'react';
+import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
+
+export default function EkonomiLinkTree() {
+  const [profile, setProfile] = useState({
+    name: 'Christian Stefanus Teja',
+    title: 'Guru Ekonomi',
+    description: 'Pembelajaran Ekonomi yang Menyenangkan'
+  });
+
+  const [links, setLinks] = useState([
+    {
+      id: 1,
+      title: 'Video Pembelajaran Ekonomi',
+      url: 'https://youtu.be/_44pe9_iu14?si=l-bH40mRrVj1n0c7',
+      icon: '📺'
+    }
+  ]);
+
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [editingLink, setEditingLink] = useState(null);
+  const [newLink, setNewLink] = useState({ title: '', url: '', icon: '📺' });
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  const handleSaveProfile = () => {
+    setEditingProfile(false);
+  };
+
+  const handleAddLink = () => {
+    if (newLink.title && newLink.url) {
+      setLinks([...links, { ...newLink, id: Date.now() }]);
+      setNewLink({ title: '', url: '', icon: '📺' });
+      setShowAddForm(false);
+    }
+  };
+
+  const handleDeleteLink = (id) => {
+    setLinks(links.filter(link => link.id !== id));
+  };
+
+  const handleSaveLink = (id, updatedLink) => {
+    setLinks(links.map(link => link.id === id ? { ...link, ...updatedLink } : link));
+    setEditingLink(null);
+  };
+
+  const emojiOptions = ['📺', '🎬', '📚', '💼', '📊', '💰', '🏦', '📈', '🎓', '✏️'];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        {/* Profile Section */}
+        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-6 relative">
+          <button
+            onClick={() => setEditingProfile(!editingProfile)}
+            className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition"
+          >
+            {editingProfile ? <X size={20} /> : <Edit2 size={20} />}
+          </button>
+
+          <div className="text-center">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl text-white font-bold">
+              {profile.name.charAt(0)}
+            </div>
+
+            {editingProfile ? (
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={profile.name}
+                  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                  placeholder="Nama"
+                />
+                <input
+                  type="text"
+                  value={profile.title}
+                  onChange={(e) => setProfile({ ...profile, title: e.target.value })}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                  placeholder="Jabatan"
+                />
+                <input
+                  type="text"
+                  value={profile.description}
+                  onChange={(e) => setProfile({ ...profile, description: e.target.value })}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                  placeholder="Deskripsi"
+                />
+                <button
+                  onClick={handleSaveProfile}
+                  className="mt-2 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition flex items-center gap-2 mx-auto"
+                >
+                  <Save size={18} />
+                  Simpan
+                </button>
+              </div>
+            ) : (
+              <>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">{profile.name}</h1>
+                <p className="text-blue-600 font-semibold mb-2">{profile.title}</p>
+                <p className="text-gray-600">{profile.description}</p>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Links Section */}
+        <div className="space-y-4">
+          {links.map((link) => (
+            <div key={link.id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition relative">
+              {editingLink === link.id ? (
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <select
+                      value={link.icon}
+                      onChange={(e) => handleSaveLink(link.id, { ...link, icon: e.target.value })}
+                      className="px-3 py-2 border-2 border-gray-300 rounded-lg text-2xl"
+                    >
+                      {emojiOptions.map(emoji => (
+                        <option key={emoji} value={emoji}>{emoji}</option>
+                      ))}
+                    </select>
+                    <input
+                      type="text"
+                      value={link.title}
+                      onChange={(e) => handleSaveLink(link.id, { ...link, title: e.target.value })}
+                      className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                      placeholder="Judul Link"
+                    />
+                  </div>
+                  <input
+                    type="url"
+                    value={link.url}
+                    onChange={(e) => handleSaveLink(link.id, { ...link, url: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                    placeholder="URL"
+                  />
+                  <button
+                    onClick={() => setEditingLink(null)}
+                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-2"
+                  >
+                    <Save size={18} />
+                    Selesai
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    <button
+                      onClick={() => setEditingLink(link.id)}
+                      className="p-2 hover:bg-gray-100 rounded-full transition"
+                    >
+                      <Edit2 size={18} className="text-blue-600" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteLink(link.id)}
+                      className="p-2 hover:bg-gray-100 rounded-full transition"
+                    >
+                      <Trash2 size={18} className="text-red-600" />
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => window.open(link.url, '_blank')}
+                    className="flex items-center gap-4 group w-full text-left"
+                  >
+                    <div className="text-4xl">{link.icon}</div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition">
+                        {link.title}
+                      </h3>
+                    </div>
+                    <div className="text-gray-400 group-hover:text-blue-600 transition">→</div>
+                  </button>
+                </>
+              )}
+            </div>
+          ))}
+
+          {/* Add New Link Form */}
+          {showAddForm ? (
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">Tambah Link Baru</h3>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <select
+                    value={newLink.icon}
+                    onChange={(e) => setNewLink({ ...newLink, icon: e.target.value })}
+                    className="px-3 py-2 border-2 border-gray-300 rounded-lg text-2xl focus:border-blue-500 focus:outline-none"
+                  >
+                    {emojiOptions.map(emoji => (
+                      <option key={emoji} value={emoji}>{emoji}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    value={newLink.title}
+                    onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
+                    className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                    placeholder="Judul Link"
+                  />
+                </div>
+                <input
+                  type="url"
+                  value={newLink.url}
+                  onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                  placeholder="https://..."
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleAddLink}
+                    className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-semibold"
+                  >
+                    Simpan Link
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setNewLink({ title: '', url: '', icon: '📺' });
+                    }}
+                    className="px-6 py-3 bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition font-semibold"
+                  >
+                    Batal
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="w-full bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition flex items-center justify-center gap-3 text-blue-600 font-semibold hover:bg-blue-50"
+            >
+              <Plus size={24} />
+              Tambah Link Baru
+            </button>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-8 text-white text-sm">
+          <p>© 2024 Link Tree Pembelajaran Ekonomi</p>
+        </div>
+      </div>
+    </div>
+  );
+}
